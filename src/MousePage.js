@@ -5,16 +5,19 @@ const useEventListener = (eventName, listener, element) => {
 
   useEffect(() => {
     listenerRef.current = listener
-    console.log('listener changed')
   }, [listener])
 
   useEffect(() => {
-    element.addEventListener(eventName, listenerRef.current)
-    console.log('event added', listenerRef.current)
+    const listenerWrapper = e => {
+      listenerRef.current(e)
+    }
+
+    element.addEventListener(eventName, listenerWrapper)
+    console.log('event added', listenerWrapper)
 
     return () => {
-      element.removeEventListener(eventName, listenerRef.current)
-      console.log('event removed', listenerRef.current)
+      element.removeEventListener(eventName, listenerWrapper)
+      console.log('event removed', listenerWrapper)
     }
   }, [eventName, element])
 }

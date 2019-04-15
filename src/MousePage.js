@@ -1,21 +1,34 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+
+const useEventListener = (eventName, listener, element) => {
+  const listenerRef = useRef()
+
+  useEffect(() => {
+    listenerRef.current = listener
+    console.log('listener changed')
+  }, [listener])
+
+  useEffect(() => {
+    element.addEventListener(eventName, listenerRef.current)
+    console.log('event added', listenerRef.current)
+
+    return () => {
+      element.removeEventListener(eventName, listenerRef.current)
+      console.log('event removed', listenerRef.current)
+    }
+  }, [eventName, element])
+}
 
 const MousePage = () => {
   const [coords, setCoords] = useState([0, 0])
 
-  useEffect(() => {
-    const mouseListener = e => {
+  useEventListener(
+    'mousemove',
+    e => {
       setCoords([e.clientX, e.clientY])
-    }
-
-    window.addEventListener('mousemove', mouseListener)
-    console.log('event added')
-
-    return () => {
-      window.removeEventListener('mousemove', mouseListener)
-      console.log('event removed')
-    }
-  }, [])
+    },
+    window
+  )
 
   return (
     <div>
